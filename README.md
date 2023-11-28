@@ -2,9 +2,10 @@
 
 ![Estacionamento Inteligente](logo.png)
 
-## Descrição do Projeto
-
-O projeto de estacionamento inteligente utiliza um sensor de distância para simular a funcionalidade de uma câmera de ré. Quando um objeto se aproxima do sensor, um buzzer é acionado e um LED pisca em uma taxa proporcional à distância do objeto.
+<div style="text-align: center; background-color: #f5f5f5; padding: 20px;">
+    <h2>Descrição do Projeto</h2>
+    <p>O projeto de estacionamento inteligente utiliza um sensor de distância para simular a funcionalidade de uma câmera de ré. Quando um objeto se aproxima do sensor, um buzzer é acionado e um LED pisca em uma taxa proporcional à distância do objeto.</p>
+</div>
 
 ## Funcionalidades
 
@@ -22,7 +23,7 @@ O projeto de estacionamento inteligente utiliza um sensor de distância para sim
 
 ## Configuração
 
-1. Monte o circuito semelhante ao esquematico ou ao mostrado pelo tinkercad.
+1. Monte o circuito semelhante ao esquemático ou ao mostrado pelo Tinkercad.
 
 2. Faça o upload do código-fonte fornecido.
 
