@@ -1,6 +1,6 @@
 # Estacionamento Inteligente com Sensor de Distância
 
-![Estacionamento Inteligente](logo.png)
+![Estacionamento Inteligente](Database/logo.png)
 
 <div style="text-align: center; background-color: #f5f5f5; padding: 20px;">
     <h2>Descrição do Projeto</h2>
