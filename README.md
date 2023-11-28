@@ -1,6 +1,6 @@
 # Estacionamento Inteligente com Sensor de Distância
 
-
+![Estacionamento Inteligente](logo.png)
 
 ## Descrição do Projeto
 
