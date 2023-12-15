@@ -11,6 +11,7 @@
 
 const int colunasDisponiveis = 16;
 const int limitedDistance = 15;
+const int numReadings = 3;
 
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 int blinkInterval = 1000;
@@ -53,76 +54,93 @@ void setup() {
 void loop() {
   float distance1, distance2, previousDistance1, previousDistance2;
   
-  previousDistance1 = getDistance(trigPin1, echoPin1);
-  previousDistance2 = getDistance(trigPin2, echoPin2);
+  previousDistance1 = getFilteredDistance(trigPin1, echoPin1);
+  delay(200);
+  distance1 = getFilteredDistance(trigPin1, echoPin1);
 
-  delay(75);
+  previousDistance2 = getFilteredDistance(trigPin2, echoPin2);
+  delay(200);
+  distance2 = getFilteredDistance(trigPin2, echoPin2);
 
-  distance1 = getDistance(trigPin1, echoPin1);
-  distance2 = getDistance(trigPin2, echoPin2);
-  
-  if (distance1 <= limitedDistance && !isDifference(distance1, previousDistance1))
+  if (distance1 < limitedDistance)
   {
-    if(distance1 < previousDistance1)
+    if (!isDifference(distance1, previousDistance1) && distance1 < previousDistance1 + 0.5)
     {
       activateLED(ledPin1);
-      playChangingBuzzer(buzzerPin1, distance1);
+      if (distance1 < 15 && distance1 > 10)
+        digitalWrite(buzzerPin1, 1000);
+      else if (distance1 <= 10)
+        digitalWrite(buzzerPin1, 5000);
+
+        delay(200);
+        noTone(buzzerPin1);
+        deactivateLED(ledPin1);
+
+    }
+
+    else
+    {
+      deactivateLED(ledPin1);
+      noTone(buzzerPin1);
     }
     vaga1 = 1;
   }
   
-  else if (distance1 <= limitedDistance && isDifference(distance1, previousDistance1))
-  {
-    deactivateLED(ledPin1);
-    noTone(buzzerPin1);
-  }
-  
   else
   {
-    vaga1 = 0;
-    noTone(buzzerPin1);
     deactivateLED(ledPin1);
+    noTone(buzzerPin1);
+    vaga1 = 0;
   }
-           
-  if (distance2 <= limitedDistance && !isDifference(distance2, previousDistance2))
+
+  if (distance2 < limitedDistance)
   {
-    if(distance2 < previousDistance2)
+    if (!isDifference(distance2, previousDistance2) && distance2 < previousDistance2 + 0.5)
     {
       activateLED(ledPin2);
-      playChangingBuzzer(buzzerPin2, distance2);
+      if (distance2 < 15 && distance2 > 10)
+        digitalWrite(buzzerPin2, 1000);
+      else if (distance1 <= 10)
+        digitalWrite(buzzerPin2, 5000);
+
+        delay(200);
+        noTone(buzzerPin2);
+        deactivateLED(ledPin2);
+    }
+
+    else
+    {
+      deactivateLED(ledPin2);
+      noTone(buzzerPin2);
     }
     vaga2 = 1;
   }
   
-  else if (distance2 <= limitedDistance && isDifference(distance2, previousDistance2))
-  {
-    deactivateLED(ledPin2);
-    noTone(buzzerPin2);
-  }
-  
   else
   {
-    vaga2 = 0;
     deactivateLED(ledPin2);
     noTone(buzzerPin2);
+    vaga2 = 0;
   }
-  
+          
   printaVagasLivres(vaga1, vaga2);
-  delay(100);
 }
 
-void playChangingBuzzer(int buzzerPin, float distance) {
+void playChangingBuzzer(int buzzerPin, float distance) 
+{
   int baseFrequency = 500;
   int maxInterval = 2000;
   int interval = map(distance, 0, 30, 0, maxInterval);
   int frequency = baseFrequency + map(distance, 0, 30, 100, 0);
   
   tone(buzzerPin, frequency);
-  delay(interval + 100);
-  noTone(buzzerPin);
+  delay(10);
+  tone(buzzerPin, frequency);
+  delay(100);
 }
 
-float getDistance(int trigPin, int echoPin) {
+float getDistance(int trigPin, int echoPin) 
+{
   
   long duration;
   digitalWrite(trigPin, LOW);
@@ -153,35 +171,21 @@ void printaVagasLivres(int vaga1, int vaga2)
   String semVagas1 = "No momento nao";
   String semVagas2 = "ha vagas livres";
   
-  if (!vaga1 && !vaga2)
+  if (!vaga1 || !vaga2)
   {
     lcd.setCursor(0, 0);
   	lcd.print("Vagas Livres:");
     
     lcd.setCursor(0, 1);
-    CentralizaTexto("Vaga A | Vaga B");
-  }
-
-  else if (!vaga1)
-  {
-    lcd.setCursor(0, 0);
-  	lcd.print("Vagas Livres:");
     
-    lcd.setCursor(0, 1);
-  	CentralizaTexto(vagaA);
-  }
-  
-  else if (!vaga2)
-  {
-    lcd.setCursor(0, 0);
-  	lcd.print("Vagas Livres:");
+    if(!vaga1 && !vaga2)
+      CentralizaTexto("Vaga A | Vaga B");
     
-    lcd.setCursor(0,1);
-    lcd.setCursor(0, 0);
-  	lcd.print("Vagas Livres:");
-    
-    lcd.setCursor(0, 1);
-  	CentralizaTexto(vagaB);
+    else if(!vaga1)
+    	CentralizaTexto(vagaA);
+      
+    else if(!vaga2)
+     	CentralizaTexto(vagaB);  	
   }
   
   else
@@ -207,5 +211,16 @@ void CentralizaTexto(String texto)
 bool isDifference(float distance, float previousDistance) {
   float diff = abs(distance - previousDistance);
   
-  return (diff <= 0.8);
+  return (diff <= 0.6);
+}
+
+float getFilteredDistance(int trigPin, int echoPin) {
+  float total = 0;
+  for (int i = 0; i < numReadings; i++) 
+  {
+    total += getDistance(trigPin, echoPin);
+    delay(10);
+  }
+
+  return total / numReadings;
 }
